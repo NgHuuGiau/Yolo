@@ -111,8 +111,17 @@ def get_medical_system_status() -> MedicalSystemStatus:
     except Exception as exc:
         resolved_model_path = None
         using_fallback_model = False
-        model_ready = False
-        model_message = str(exc)
+        brain_model_path = Path(config.brain_model_path) if config.brain_model_path else None
+        if brain_model_path is not None and brain_model_path.exists():
+            resolved_model_path = brain_model_path
+            model_ready = True
+            model_message = (
+                "Chua co model tong quat, dang dung brain model (%s). "
+                "Chỉ phân tích được ảnh vùng đầu (body_region=brain)." % brain_model_path.name
+            )
+        else:
+            model_ready = False
+            model_message = str(exc)
 
     train_images = _count_split_images(training_paths.dataset_root, "train")
     val_images = _count_split_images(training_paths.dataset_root, "val")

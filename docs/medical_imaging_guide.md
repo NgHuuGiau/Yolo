@@ -41,17 +41,18 @@ Lưu ý: `init-dataset` chỉ in layout mong đợi, không tự tạo dữ li�
 
 ---
 
-## 4. Nhóm bệnh và modality hỗ trợ
+## 4. Nhóm bệnh và modality hỗ trợ (Trạng thái 09/2026)
 
-| Nhóm | Ảnh / volume thường dùng |
-|---|---|
-| Gan | Siêu âm, CT, MRI, PET/CT |
-| Phổi | X-quang ngực, CT ngực, PET/CT |
-| Vú | Mammogram, siêu âm vú, MRI vú |
-| Dạ dày | Nội soi, CT, MRI, PET, EUS |
-| Đại trực tràng | Nội soi đại tràng, CT bụng-chậu, MRI trực tràng, PET |
-| Tuyến tiền liệt | MRI tuyến tiền liệt, siêu âm, PET/CT |
-| Cổ tử cung | MRI, CT, PET/CT |
+| Nhóm | Ảnh / volume thường dùng | Trạng thái model |
+|---|---|---|
+| **Não** | MRI, CT sọ não, PET/CT não | ✅ **Sẵn sàng** — 4 loại u (glioma/meningioma/pituitary/no_tumor) |
+| Gan | Siêu âm, CT, MRI, PET/CT | ❌ Chờ model 7 ung thư |
+| Phổi | X-quang ngực, CT ngực, PET/CT | ❌ Chờ model 7 ung thư |
+| Vú | Mammogram, siêu âm vú, MRI vú | ❌ Chờ model 7 ung thư |
+| Dạ dày | Nội soi, CT, MRI, PET, EUS | ❌ Chờ model 7 ung thư |
+| Đại trực tràng | Nội soi đại tràng, CT bụng-chậu, MRI trực tràng, PET | ❌ Chờ model 7 ung thư |
+| Tuyến tiền liệt | MRI tuyến tiền liệt, siêu âm, PET/CT | ❌ Chờ model 7 ung thư |
+| Cổ tử cung | MRI, CT, PET/CT | ❌ Chờ model 7 ung thư |
 
 ### Định dạng ảnh hỗ trợ
 
@@ -61,6 +62,8 @@ Lưu ý: `init-dataset` chỉ in layout mong đợi, không tự tạo dữ li�
 - **Pap/HPV, soi cổ tử cung, sinh thiết**: đầu vào lâm sàng, không hỗ trợ upload trực tiếp
 
 Chat UI cho phép chọn nhóm bệnh và modality để lọc file picker phù hợp.
+
+> **Lưu ý quan trọng**: Hệ thống hiện chỉ phân tích được **ung thư não** (model chính). Model 7 ung thư `medical_7_cancers_cnn.pt` chưa có — pipeline tự fallback sang brain model cho mọi ảnh. Khi upload ảnh, modality sẽ được tự động nhận diện (99.93% accuracy), nếu là não/MRI/CT sọ não → phân tích 4 loại u não; các loại khác báo "chỉ hỗ trợ não".
 
 ---
 

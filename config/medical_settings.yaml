@@ -166,7 +166,7 @@ medical:
       quality_threshold: 0.45
   model: models/pretrained/medical_7_cancers_cnn.pt
   brain_model: models/pretrained/brain_classifier.pt
-  modality_model: modality_classifier.pt
+  modality_model: models/pretrained/modality_classifier.pt
   yolo_model_path: models/trained/medical_yolo_detect.pt
   nested_cross_validation: false
   num_workers: 4

@@ -313,6 +313,7 @@ class MedicalImageAnalyzer:
         self._modality_wrapper_cache: MedicalCNNClassifierWrapper | None = None
         self._modality_wrapper_cache_path: Path | None = None
         self._roi_extractor: Any = None
+        self._brain_fallback_active = False
 
     @staticmethod
     def _call_progress(cb: ProgressCallback, stage: str, pct: float) -> None:
@@ -771,7 +772,7 @@ class MedicalImageAnalyzer:
         brain_model_path = Path(self.config.brain_model_path)
         if not brain_model_path.exists():
             return False
-        return body_region == "brain"
+        return self._brain_fallback_active or body_region == "brain"
 
     def _detect_findings(self, image: np.ndarray, *, body_region: str | None = None) -> list[DetectionFinding]:
         cnn_wrapper = self._load_brain_wrapper() if self._uses_brain_model(body_region) else self._load_cnn_wrapper()
@@ -869,6 +870,7 @@ class MedicalImageAnalyzer:
                 issues = validate_medical_analyzer_config(self.config)
                 if issues:
                     raise ValueError("Cấu hình medical không hợp lệ: " + "; ".join(issues))
+                self._brain_fallback_active = True
                 return brain_model_path
             candidates = ", ".join(str(p) for p in iter_medical_runtime_model_paths(self.config))
             raise FileNotFoundError(

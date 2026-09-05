@@ -34,7 +34,7 @@ OncoVision/
 │   ├── runtime_advisor.py   # Gợi ý cấu hình runtime
 │   └── tracking/            # Gán track, smooth, filter detection
 ├── dataset/                 # Dữ liệu vận hành
-│   ├── medical/             # Dataset y tế (skin lesion, ...)
+│   ├── medical/             # Dataset y tế (ung thư não: glioma/meningioma/pituitary/no_tumor)
 │   ├── medical_modality/    # Dataset phân loại modality (8 loại)
 │   └── object_detection/    # Dataset YOLO detection
 ├── docs/                    # Tài liệu
@@ -47,7 +47,7 @@ OncoVision/
 │   ├── validator.py         # Kiểm tra ảnh đầu vào
 │   └── cli_helpers.py       # Helper in trạng thái CLI
 ├── models/                  # Mô hình
-│   ├── pretrained/          # YOLO pretrained, modality classifier
+│   ├── pretrained/          # YOLO pretrained, modality classifier, brain classifier
 │   └── trained/             # Model đã train (best.pt)
 ├── output/                  # Kết quả đầu ra
 │   ├── captures/            # Ảnh chụp từ camera

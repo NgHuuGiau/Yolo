@@ -14,16 +14,29 @@
 
 ---
 
+## Trạng thái hiện tại (09/2026)
+
+| Thành phần | Trạng thái |
+|---|---|
+| **Modality Classifier** | ✅ Sẵn sàng — ResNet18, 8 loại ảnh, **99.93% acc** (test 5,640 ảnh) |
+| **Brain Classifier** | ✅ Sẵn sàng — ConvNeXt-Tiny, 4 loại u não (glioma/meningioma/pituitary/no_tumor), **fallback tự động** khi thiếu model tổng |
+| **Model 7 ung thư** | ❌ Chưa có (`medical_7_cancers_cnn.pt` — đang chờ dữ liệu train mới) |
+| **Web UI (FastAPI)** | ✅ Chạy được — `python web_app.py` → http://127.0.0.1:8000 |
+| **Desktop Chat (PySide6)** | ✅ Chạy được — `python run_chat.py` |
+| **Test suite** | ✅ **293 tests pass** |
+
+> **Lưu ý**: Hệ thống hiện chỉ phân tích được **ung thư não** (model chính). Các nhóm ung thư khác cần model `medical_7_cancers_cnn.pt` — sẽ bổ sung khi có dữ liệu train mới.
+
+---
+
 ## Tính năng chính
 
 | Nhóm | Mô tả |
 |---|---|
 | **Chat AI Y khoa** | Giao diện desktop (PySide6) và web (FastAPI) để đặt câu hỏi, tải ảnh y khoa và nhận phân tích tự động |
-| **Phân tích ảnh y tế** | Hỗ trợ 7 nhóm ung thư (gan, phổi, vú, dạ dày, đại trực tràng, tuyến tiền liệt, cổ tử cung) với đa modality (CT, MRI, X-quang, siêu âm, nội soi, PET/CT, mammogram) |
+| **Phân tích ảnh y tế** | **Ưu tiên não** (4 loại u) — modality tự động nhận diện; 7 nhóm khác chờ model |
 | **Camera thông minh** | Chạy realtime object detection với nhiều chế độ (auto/high/medium/low), tự động gợi ý cấu hình runtime phù hợp với máy |
 | **Huấn luyện mô hình** | Pipeline train YOLO detection và CNN classifier đầy đủ, hỗ trợ resume, augment dữ liệu, export model |
-| **YOLO Detection** | Phát hiện vật thể trong ảnh y khoa |
-| **CNN Classifier** | Phân loại modality, nhóm ung thư |
 
 ---
 
@@ -73,7 +86,7 @@ python -m uvicorn web_app:app --host 127.0.0.1 --port 8000
 ## Bản đồ entrypoint
 
 | Entrypoint | Vai trò |
-|---|---|---|
+|---|---|
 | `run_chat.py` | Giao diện chat AI desktop — kiểm tra trạng thái, mở chat, dọn dẹp output |
 | `run_app.py` | Camera realtime — gợi ý cấu hình runtime, chạy object detection trực tiếp |
 | `run_menu.py` | Menu tổng hợp, cửa vào cho người vận hành |
@@ -101,18 +114,18 @@ Hệ thống **chỉ phân tích ảnh** bằng các model đã train sẵn — 
 
 ```powershell
 # Đặt các file model đã train vào models/pretrained/:
-#   medical_7_cancers_cnn.pt   → 7 ung thư (gan, phổi, vú, dạ dày, đại trực tràng, tiền liệt, tử cung)
-#   brain_classifier.pt        → Não (4 sub-label)
-#   modality_classifier.pt     → Modality (8 loại ảnh y tế)
+#   brain_classifier.pt        → Não (4 sub-label) — **ĐÃ CÓ, SẴN SÀNG**
+#   modality_classifier.pt     → Modality (8 loại ảnh y tế) — **ĐÃ CÓ, 99.93%**
+#   medical_7_cancers_cnn.pt   → 7 ung thư (gan, phổi, vú, dạ dày, đại trực tràng, tiền liệt, tử cung) — **CHƯA CÓ, CHỜ DATA MỚI**
 
 # Kiểm tra hệ thống đã nhận đủ model chưa
 python run_doctor.py --skip-camera-check
 
-# Phân tích 1 ảnh
+# Phân tích 1 ảnh (ưu tiên não)
 python run_medical.py analyze --image path/to/ảnh.jpg --patient-code BN001
 ```
 
-> Model chưa được bổ sung sẽ được `run_doctor.py` báo là chưa sẵn sàng với hướng dẫn cụ thể.
+> Model `medical_7_cancers_cnn.pt` chưa có → `run_doctor.py` sẽ báo "chỉ phân tích được não". Đây là hành vi dự kiến.
 
 ---
 
@@ -130,11 +143,12 @@ OncoVision/
 ├── config/                 # Cấu hình YAML
 ├── dataset/                # Dữ liệu
 │   ├── medical/            # Dataset y tế
+│   │   └── Ung thư não/    # Raw/processed cho 4 loại u não
 │   ├── medical_modality/   # Dataset modality (8 loại)
 │   └── object_detection/   # Dataset detection
 ├── models/                 # Mô hình
-│   ├── pretrained/         # Model tiền huấn luyện
-│   └── trained/            # Model đã train
+│   ├── pretrained/         # Model tiền huấn luyện (brain, modality, yolo11*)
+│   └── trained/            # Model đã train (trống — chờ data mới)
 ├── output/                 # Kết quả đầu ra
 ├── docs/                   # Tài liệu
 └── tests/                  # Unit test
@@ -144,7 +158,7 @@ OncoVision/
 
 ## Medical Pipeline (OncoVision AI)
 
-Hệ thống phân tích ảnh y khoa với CNN classifier (convnext_tiny pretrained @512px cho ung thư/não, resnet18 @320px cho modality), hỗ trợ 7 nhóm ung thư:
+Hệ thống phân tích ảnh y khoa với CNN classifier (convnext_tiny pretrained @512px cho não, resnet18 @320px cho modality):
 
 | Bước | Module | Mô tả |
 |---|---|---|

@@ -54,11 +54,17 @@ python run_doctor.py --skip-camera-check
 python run_medical.py status
 ```
 
-Nếu thiếu model:
+**Trạng thái model (09/2026):**
+- ✅ `brain_classifier.pt` — Não (4 loại u) — **SẴN SÀNG**
+- ✅ `modality_classifier.pt` — 8 modality — **99.93%**
+- ❌ `medical_7_cancers_cnn.pt` — 7 ung thư — **CHƯA CÓ**
 
-- Bổ sung file đã train vào `models/pretrained/` (`medical_7_cancers_cnn.pt`, `brain_classifier.pt`, `modality_classifier.pt`)
+Nếu thiếu model:
+- Bổ sung file đã train vào `models/pretrained/`
 - Hoặc sửa đường dẫn trong `config/medical_settings.yaml`
 - Xem `medical/model_policy.py` để hiểu cách resolve đường dẫn model
+
+> **Lưu ý**: Thiếu model 7 ung thư → hệ thống tự fallback sang brain model cho mọi ảnh. `run_doctor.py` báo "chỉ phân tích được não". Đây là hành vi dự kiến.
 
 ---
 
