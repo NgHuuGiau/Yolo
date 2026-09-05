@@ -116,8 +116,8 @@ def get_medical_system_status() -> MedicalSystemStatus:
             resolved_model_path = brain_model_path
             model_ready = True
             model_message = (
-                "Chua co model tong quat, dang dung brain model (%s). "
-                "Chỉ phân tích được ảnh vùng đầu (body_region=brain)." % brain_model_path.name
+                f"Chua co model tong quat, dang dung brain model ({brain_model_path.name}). "
+                f"Chỉ phân tích được ảnh vùng đầu (body_region=brain)."
             )
         else:
             model_ready = False
